@@ -70,7 +70,7 @@ cd simpleAPI
 docker build -t simple-api .
 docker run -p 3000:3000 simple-api
 ```
-Accede a http://localhost:3000/counter para ver el contador incremental.
+Accede a http://localhost:3000/random para ver el contador incremental.
 
 ### 2. Simple React App
 Frontend en React que consume la API de números aleatorios.
@@ -78,7 +78,7 @@ Frontend en React que consume la API de números aleatorios.
 ```bash
 cd simpleReactApp
 docker build -t simple-react .
-docker run -p 3001:3000 simple-react
+docker run -p 80:80 simple-react
 ```
 Accede a http://localhost:80
 
