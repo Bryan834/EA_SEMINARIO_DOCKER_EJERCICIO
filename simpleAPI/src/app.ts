@@ -1,7 +1,9 @@
 import express from 'express';
 import cors from 'cors';
+import mongoose from 'mongoose';
 import { logger } from './config/logger';
 import dotenv from 'dotenv';
+import { Counter } from './models/counter';
 
 dotenv.config();
 
@@ -14,15 +16,26 @@ const port = process.env.PORT;
 const api_url = process.env.API_URL;
 const mongoUrl = process.env.MONGO_URL || 'mongodb://localhost:27017/hitcounter';
 
-app.get('/ping', (_req , res) => {
-    logger.info(`Ping request received`);
-    res.send('pong')
-})
 
-app.get("/random", (_req, res) => {
-    logger.info(`Random request received`);
-    res.json({ number: Math.floor(Math.random() * 1000) });
-})
+mongoose.connect(mongoUrl).then(() => {
+    logger.info({ mongoUrl }, "Connected to MongoDB");
+}).catch(error => {
+    logger.error({ err: error }, "MongoDB connection error");
+});
+
+app.get('/counter', async (req, res) => {
+    try {
+        const counter = await Counter.findOneAndUpdate(
+            { name: 'hits' },
+            { $inc: { count: 1 } },
+            { upsert: true, new: true }
+        );
+        res.json({ number: counter.count });
+    } catch (error) {
+        logger.error({ err: error }, "Error in counter endpoint");
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 
 app.listen(port, () => {
     logger.info(`Server running at http://${api_url}:${port}`);

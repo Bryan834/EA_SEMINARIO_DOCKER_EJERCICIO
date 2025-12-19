@@ -2,25 +2,25 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 function App() {
-  const [randomNumber, setRandomNumber] = useState(null);
+  const [hits, setHits] = useState(null);
 
-  const fetchRandomNumber = async () => {
+  const fetchHits = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/random`);
-      setRandomNumber(response.data.number);
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/counter`);
+      setHits(response.data.number);
     } catch (error) {
-      console.error('Error fetching random number:', error);
+      console.error('Error fetching hits:', error);
     }
   };
 
   return (
     <div style={{ textAlign: 'center', marginTop: '50px' }}>
-      <h1>API Ramdom Number</h1>
-      <button onClick={fetchRandomNumber}>
-        Number
+      <h1>API Hit Counter</h1>
+      <button onClick={fetchHits}>
+        Count Hit
       </button>
-      {randomNumber !== null && (
-        <p>Random Number: {randomNumber}</p>
+      {hits !== null && (
+        <p>Total hits: {hits}</p>
       )}
     </div>
   );

@@ -17,21 +17,11 @@ RUN npm run build
 FROM nginx:alpine
 
 COPY --from=build /app/build /usr/share/nginx/html
-COPY --from=build /app/nginx.conf* /app/
 
 # Argument to select environment (development or production)
 ARG NGINX_ENV=production
 
-# Copy the appropriate nginx config based on environment
-RUN rm -f /etc/nginx/conf.d/*.conf && \
-    if [ "$NGINX_ENV" = "production" ] && [ -f /app/nginx.conf.production ]; then \
-      cp /app/nginx.conf.production /etc/nginx/conf.d/app.conf; \
-    elif [ "$NGINX_ENV" = "development" ] && [ -f /app/nginx.conf.development ]; then \
-      cp /app/nginx.conf.development /etc/nginx/conf.d/app.conf; \
-    else \
-      echo "Warning: No nginx.conf file found for NGINX_ENV=$NGINX_ENV, using default"; \
-      cp /app/nginx.conf /etc/nginx/conf.d/app.conf; \
-    fi
+COPY nginx.conf.${NGINX_ENV} /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
